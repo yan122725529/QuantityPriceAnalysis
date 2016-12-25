@@ -60,6 +60,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CvsImporter.cs" />
+    <Compile Include="ImportLog.cs" />
+    <Compile Include="StockInfoEntity.cs" />
     <Compile Include="StockOneDateInfoEntity.cs" />
     <Compile Include="Thread\CatchForAction.cs" />
     <Compile Include="Thread\UIThread.cs" />

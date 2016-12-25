@@ -25,6 +25,6 @@ namespace OY.StockPriceQtyTool
         /// <summary>
         /// 交易日期
         /// </summary>
-        public DateTime Date { get; set; }
+        public DateTime DealDate { get; set; }
     }
 }
