@@ -150,7 +150,7 @@ namespace OY.StockPriceQtyTool
             }
         }
 
-        private object _countLock=new object();
+        private readonly object _countLock=new object();
 
         /// <summary>
         ///     多线程处理文件
@@ -204,6 +204,7 @@ namespace OY.StockPriceQtyTool
                                 try
                                 {
                                     BulkInsertToDataBase(insertDataTable);
+                                    insertDataTable.Clear();
                                 }
                                 catch (Exception)
                                 {
@@ -211,8 +212,7 @@ namespace OY.StockPriceQtyTool
                                     throw;
                                 }
 
-                                BulkInsertToDataBase(insertDataTable);
-                                insertDataTable.Clear();
+                         
 
                                 #endregion
 
@@ -237,6 +237,16 @@ namespace OY.StockPriceQtyTool
 
                             else
                             {
+                                if (insertDataTable.Rows.Count <= 0) return;
+                                try
+                                {
+                                    BulkInsertToDataBase(insertDataTable);
+                                }
+                                catch (Exception)
+                                {
+                                    insertDataTable.Clear();
+                                    throw;
+                                }
                                 return; //跳出
                             }
                         }
