@@ -45,7 +45,7 @@ namespace OY.StockPriceQtyTool
         /// <returns></returns>
         private bool CheckDataIsExists(string stockCode, DateTime dealDate)
         {
-            return _importLogs.Any(x => x.ImportIsSuccess && (x.StockCode == stockCode) && (x.DealDate == dealDate));
+            return _importLogs.Any(x => (x.StockCode == stockCode) && (x.DealDate == dealDate));
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace OY.StockPriceQtyTool
                     insertDataTable.Columns.Add(new DataColumn("StockCode", typeof(string)));
                     insertDataTable.Columns.Add(new DataColumn("StockIsBuyState", typeof(bool)));
                     insertDataTable.Columns.Add(new DataColumn("DealDate", typeof(DateTime)));
-                    IList<Tuple<string, DateTime>> doneList = new List<Tuple<string, DateTime>>();
+                   
 
                     #endregion
 
@@ -195,10 +195,8 @@ namespace OY.StockPriceQtyTool
                                     newrow["DealDate"] = entity.DealDate;
                                     insertDataTable.Rows.Add(newrow);
                                 }
-                                doneList.Add(new Tuple<string, DateTime>(result.Key.Name.Replace(".csv", string.Empty),
-                                    result.Value));
+                             
                                 if (insertDataTable.Rows.Count < 10000) continue;
-
                                 #region insert数据库，并且清空insertDataTable数据
 
                                 try
@@ -215,23 +213,6 @@ namespace OY.StockPriceQtyTool
                          
 
                                 #endregion
-
-                                #region 日志处理
-
-                                foreach (var job in doneList)
-                                    _logJobStack.Push(new ImportLog
-                                    {
-                                        StockCode = job.Item1,
-                                        DealDate = job.Item2,
-                                        ImportDateTime = DateTime.Now,
-                                        ImportIsSuccess = true
-                                    });
-
-
-                                doneList.Clear();
-
-                                #endregion
-
                                 #endregion
                             }
 
@@ -254,17 +235,7 @@ namespace OY.StockPriceQtyTool
                         {
                             //todo 记下日志
                             Debug.WriteLine(ex.Message);
-
-                            foreach (var job in doneList)
-                                _logJobStack.Push(new ImportLog
-                                {
-                                    StockCode = job.Item1,
-                                    DealDate = job.Item2,
-                                    ImportDateTime = DateTime.Now,
-                                    ImportIsSuccess = false
-                                });
-
-                            _logJobStack.Clear();
+                         
                         }
                 }).ContinueWith(task =>
                 {
@@ -368,7 +339,6 @@ namespace OY.StockPriceQtyTool
         {
             Debug.WriteLine("insertDataTableCount:" + insertDataTable.Rows.Count);
 
-
             ////映射表的列和Datatable的列
             //var copy = new SqlBulkCopy(conn, SqlBulkCopyOptions.CheckConstraints, tran)
             //{
@@ -380,6 +350,22 @@ namespace OY.StockPriceQtyTool
             //    copy.ColumnMappings.Add(dc.ColumnName, dc.ColumnName);
             //}
             //copy.WriteToServer(dt);
+
+            #region 日志处理
+
+            foreach (var row in insertDataTable.Rows)
+                _logJobStack.Push(new ImportLog
+                {
+                    //StockCode = job.Item1,
+                    //DealDate = job.Item2,
+                    ImportDateTime = DateTime.Now,
+                   
+                });
+
+
+
+
+            #endregion
         }
     }
 }

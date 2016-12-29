@@ -13,11 +13,7 @@ namespace OY.StockPriceQtyTool
         /// </summary>
         public DateTime DealDate { get; set; }
 
-        /// <summary>
-        /// 是否导入成功
-        /// </summary>
-        public bool ImportIsSuccess { get; set; }
-
+       
         /// <summary>
         /// 导入操作完成时间
         /// </summary>
